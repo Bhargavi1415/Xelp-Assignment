@@ -1,3 +1,4 @@
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -6,12 +7,15 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class LayoutOne extends DriverSetup {
-    public void tooltip() {
+    public void tooltip() throws InterruptedException {
         WebElement elementToHover = driver.findElement(By.className("tooltip"));
+        Thread.sleep(1500);
         Actions actions = new Actions(driver);
         actions.moveToElement(elementToHover).perform();
+        Thread.sleep(1500);
        WebElement tooltip = driver.findElement(By.xpath("//span[text()='This is your sample Tooltip text']"));
         if (tooltip.isDisplayed()) {
+            Thread.sleep(1500);
             System.out.println("Tooltip is displayed after hover.");
             // You can add your assertions or further actions here
         } else {
@@ -19,15 +23,17 @@ public class LayoutOne extends DriverSetup {
             // Handle the case where the tooltip is not present
         }
     }
-    public void doubleClick() {
+    public void doubleClick() throws InterruptedException {
         WebElement element = driver.findElement(By.className("ex1"));
-    // Use JavaScript to scroll the element into view
+    // Scrolling =======================
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
         WebElement doubleClickButton = driver.findElement(By.xpath("//button[text()=\"Double-click me\"]"));
         Actions actions = new Actions(driver);
         actions.doubleClick(doubleClickButton).perform();
+        Thread.sleep(1500);
         WebElement messageDisplayed = driver.findElement(By.xpath("//p[text()='Your Sample Double Click worked!']"));
         if (messageDisplayed.isDisplayed()) {
+            Thread.sleep(1500);
             System.out.println("Double-click worked!");
         } else {
             System.out.println("Double-click did not work.");
@@ -36,10 +42,11 @@ public class LayoutOne extends DriverSetup {
     public void dragnDrop() throws InterruptedException {
         WebElement sourceImage = driver.findElement(By.xpath("//div/img[@id=\"drag1\"]"));
         WebElement targetBox = driver.findElement(By.xpath("//div[@id=\"div1\"]"));
-        Thread.sleep(5000);
+        Thread.sleep(1500);
         // Scroll ==========
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", sourceImage);
         JavascriptExecutor js = (JavascriptExecutor) driver;
+        Thread.sleep(1500);
         js.executeScript("function createEvent(typeOfEvent) {\n" +
                 "  var event = document.createEvent(\"CustomEvent\");\n" +
                 "  event.initCustomEvent(typeOfEvent, true, true, null);\n" +
@@ -78,17 +85,66 @@ public class LayoutOne extends DriverSetup {
                 "var sourceImage = arguments[0];\n" +
                 "var targetBox = arguments[1];\n" +
                 "simulateHTML5DragAndDrop(sourceImage, targetBox);", sourceImage, targetBox);
-//        // Drag n drop ===========
-//        Actions actions = new Actions(driver);
-//        actions.clickAndHold(sourceImage).moveToElement(targetBox).release().perform();
-//        actions.dragAndDrop(sourceImage, targetBox).perform();
         System.out.println("Drag and drop performed");
+    }
+    public void sampleAlertButton() throws InterruptedException {
+        WebElement alertButton = driver.findElement(By.xpath("//button[text()=\" Your Sample Alert Button!\"]"));
+        // Select OK button
+        alertButton.click();
+        Alert alert = driver.switchTo().alert();
+        alert.accept(); // Click the "OK" button
+        WebElement alertTextOk = driver.findElement(By.xpath("//p[text()=\"You Pressed the OK Button!\"]"));
+        if (alertTextOk.equals("You Pressed the OK Button!")) {
+            Thread.sleep(1500);
+            System.out.println("Alert message is correct.");
+        } else {
+            System.out.println("Alert message is not as expected.");
+        }
+        //Select Cancel button ===============
+        alertButton.click();
+        Alert alert1 = driver.switchTo().alert();
+        Thread.sleep(1500);
+        alert.dismiss(); // Click the "Cancel" button
+        Thread.sleep(1500);
+        WebElement alertTextCancel = driver.findElement(By.xpath("//p[text()=\"You pressed the Cancel Button!\"]"));
+        if (alertTextCancel.equals("You pressed the Cancel Button!")) {
+            System.out.println("Alert message is correct.");
+        } else {
+            System.out.println("Alert message is not as expected.");
+        }
+    }
+    public void loginPage() throws InterruptedException {
+       WebElement loginButton = driver.findElement(By.xpath("//input[@type=\"submit\"]"));
+       WebElement userNameField = driver.findElement(By.xpath("//input[@id=\"uname\"]"));
+       WebElement passwordField = driver.findElement(By.xpath("//input[@id=\"pwd\"]"));
+       String username = "test";
+       String password = "test";
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", loginButton);
+        Thread.sleep(1500);
+        userNameField.sendKeys(username);
+        Thread.sleep(1500);
+        passwordField.sendKeys(password);
+        Thread.sleep(1500);
+        loginButton.click();
+        // Login successful page =================
+        WebElement loginSuccessMessage = driver.findElement(By.xpath("//*[text()=\"Login Successful :) \"]"));
+        if (loginSuccessMessage.isDisplayed()) {
+            System.out.println("Login worked!");
+        } else {
+            System.out.println("Login did not work.");
+        }
+        // Click on here =============
+        WebElement here = driver.findElement(By.xpath("//*[text()=\"here\"]"));
+        Thread.sleep(1500);
+        here.click();
     }
     @Test
 
     public void run() throws InterruptedException {
+        sampleAlertButton();
         tooltip();
         doubleClick();
         dragnDrop();
+        loginPage();
     }
 }
