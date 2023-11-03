@@ -139,8 +139,7 @@ public class LayoutOne extends DriverSetup {
         here.click();
     }
     @Test
-
-    public void run() throws InterruptedException {
+    public void runLayoutOne() throws InterruptedException {
         sampleAlertButton();
         tooltip();
         doubleClick();
